@@ -1,0 +1,6 @@
+## CounterOfWordLetterSpaces
+## This counts and records a number (n+1 where n initially is -1) for a letters position in a word.  
+
+letterspacer=($(echo "letterspacer" | sed 's|.|& |g' )) ;
+letterspacercount=($( echo ${#letterspacer[@]})) ;
+n=(-1) ; while [[ $n -lt $letterspacercount-1 ]]; do n=$((n+1)) ; echo "$n""${letterspacer[$n]}" $? ; done
