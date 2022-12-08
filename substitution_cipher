@@ -1,0 +1,28 @@
+##This is subistitution cipher of a : 1 , z:26 etc. It opperates by using eval upon lines of a file that are loaded into an array. The file contains a part of a sed expresion in the form--->>>  -e 's|find|replace|g'  
+## "hypen e apostrophe s verticalbar find verticalbar replace verticalbar g"  where find and replace are the values of corrosponding linenumbers in the "find.txt" and "replace.txt" files. 
+##-------------------------------------------------------------------------------
+
+alphabet=($(echo {a..z})) ;
+##stores individual letters of the alphabet sequence a--z into an array called Alphabet
+for i in ${alphabet[@]} ; do echo $i ; done > find.txt
+##Writes to the find.txt file ; each element of the alphabet array on its own line.
+numbers=($(echo {1..26})) ;
+##stores individual numbers of the sequence 1--26 into an array called numbers
+for i in ${numbers[@]} ; do echo $i ; done > replace.txt ;
+##Writes to the replace.txt file ; each element of the numbers array on its own line.
+printf "\055e \'s\n%.0s" {1..26} > sedfirsthalf.txt ;
+## Writes on 26 individual lines of to the sedfirsthalf.txt file the characters--->>>                         -e 's
+## (it writes) "hypen e apostrophe s" note the mix of printf octal recognition and escape characters.
+printf "g'\n%.0s" {1..26} > sedsecondhalf.txt ;
+## Writes on 26 individual lines of to the sedsecondhalf.txt file the characters--->>>                         g'
+## (it writes) "g apostrophe" .
+paste -d '|' sedfirsthalf.txt alphabet.txt numbers.txt sedsecondhalf.txt > expression.txt ;
+## Writes to expression.txt the combination of the four files (sedfirsthalf.txt alphabet.txt numbers.txt sedsecondhalf.txt) with a vertical bar as paste seperator.
+z=($(<expression.txt)) ;
+##stores individual lines of the expression.txt file into an array called z
+
+echo "so I'm not really sure what I intend with this" | eval "sed ${z[@]}"
+##pipes from an echo into a sed expression script.
+
+##------------------------------------------------------------------------------
+##OUTPUT == 1915 I'13 141520 1851121225 1921185 238120 I 914205144 239208 208919 
