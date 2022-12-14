@@ -1,0 +1,30 @@
+# generator of pixels (includes a record of pixel coordinates generated) too do add usefull bits and unobfusticate draftcode by defining variables properly etc , errors but works as intended 
+filenamecount=(2 ) ;
+record=("138,25 183,96 68,5 67,26 75,71 110,88 96,94 141,22 153,48 157,31 134,67 182,8 66,47 116,51 70,64 128,100 51,34 53,34 176,23 161,78 134,22 115,32 37,54 114,22 117,20 171,31 112,83 93,102 68,22 102,0 187,105 95,37 74,19 66,4 106,55 59,68 75,94 73,78 155,67 43,7 178,46 94,0 162,14 116,36 9,95 1,11 95,75 19,22 151,82 184,28"  ) ;
+startblock () 
+{ 
+    echo '#' 'generator of pixels (includes a record of pixel coordinates generated) too do add usefull bits and unobfusticate draftcode by defining variables properly etc , errors but works as intended ';
+    filenamecount=$(($filenamecount+1));
+    uniquefilename=($( echo pixelmap"$filenamecount" ));
+    echo 'filenamecount=''('"${filenamecount[@]}" ') ;';
+    hmm=($( echo {0..192},{0..108}));
+    y=($( shuf -en 50 "${hmm[@]}" ));
+    record+=("$( echo "${y[@]}" )");
+    echo -n 'record=''(';
+    for i in "${record[@]}";
+    do
+        printf \""$i"\"' ';
+    done;
+    echo ' ) ;';
+    x=($( printf "convert \055size 192x108 xc:skyblue  \055fill black           \055draw 'point wazzup'      \055scale 192x108   "$uniquefilename".gif" ));
+    for i in "${y[@]}";
+    do
+        x=($( echo "${x[@]}" |
+ sed "s|-draw 'point wazzup| -draw 'point $i ' &|g" ));
+    done;
+    z=($(echo "${x[@]}" | sed -e "s|-draw 'point wazzup'||g" -e "s|-draw 'point 0 '||g" ));
+    eval "${z[@]}";
+    declare -f startblock;
+    echo 'startblock > pixelgenerator.sh'
+}
+startblock > pixelgenerator.sh
