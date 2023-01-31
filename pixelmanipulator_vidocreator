@@ -1,7 +1,7 @@
-## This creates a video by takeing an image, and for a number of frames : converting the black pixels of the image into pixel coordinates, shufflling them about ; then by creating a imagemagick command containing those pixels ; evals that command and pipes it into ffmpeg.  
+## This creates a video by takeing an image, and for a number of frames : converting the gray pixels of the image into pixel coordinates, shufflling them about ; then by creating a imagemagick command containing those pixels ; evals that command and pipes it into ffmpeg.  
  ## note the file 'somefile.png' cannot exist. If it does it will be drawn into a video.
 ##It seems to me that currentlly seds memory buffers will be reached if the number of pixels in the image to be manipulated is anything but rather small (.  
-
+## the FIFO - named pipe 'apipe' needs to be created for this to work. 
  
  echo  '#' 'this is agenerator of pixels enter a number of frames type carefully' ;
 read "framerange" ;
