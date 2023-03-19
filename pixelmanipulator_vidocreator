@@ -1,0 +1,38 @@
+## This creates a video by takeing an image, and for a number of frames : converting the gray pixels of the image into pixel coordinates, shufflling them about ; then by creating a imagemagick command containing those pixels ; evals that command and pipes it into ffmpeg.  
+ ## note the file 'somefile.png' cannot exist. If it does it will be drawn into a video.
+##It seems to me that currentlly seds memory buffers will be reached if the number of pixels in the image to be manipulated is anything but rather small (.  
+## the FIFO - named pipe 'apipe' needs to be created for this to work. 
+ 
+ echo  '#' 'this is agenerator of pixels enter a number of frames type carefully' ;
+read "framerange" ;
+ echo  '#' 'enter a imagefile type carefully' ;
+ read "image" ;
+ imagedimension=$( identify -ping -format '%w %h' "$image" | sed 's| |x|g' ) ;
+
+ command=$( printf "convert \055size "$imagedimension" xc:skyblue  \055fill black            swapbit      \055scale "$imagedimension" somefile.png png:\055 "  ) ;
+ chords=($( convert "$image" -threshold 50% -type bilevel txt:- | tail -n +2 | sed -n 's/^\(.*\):.*gray(0)$/\1/p' )) ;
+
+while [ "$framerange" -gt 0 ]; do
+   
+chordupdate=($( for i in "${chords[@]}";
+    do x+=($(echo $i | sed 's|,| |g' )) ; y=($( for i in "${x[@]}" ; do possspeeds=($(echo "$(shuf -i 0-10| head -1)-5"|bc )) ; echo ""$i"+"${possspeeds[@]}"" | bc  ;  done )) ; echo "${y[@]}" | sed 's| |,|g'  ; y=() ; x=()  ; done )) ;
+
+chordupdate[0]=;
+chordupdate[1]=;
+ hmm=$(for i in "${chordupdate[@]}"; do  echo -n "  -draw ' point $i  '" ; done ) ;
+  
+z=$(for i in "${hmm[@]}"; do echo "${command[@]}" | sed "s|swapbit|$i|g" ; done | sed "s| -draw ' point   '||g" ) ;
+
+ f+="$( echo  " \"${z[@]} \"" )" ;     framerange=$(($framerange-1)) ; done ;
+  var=() ; var+=$(  echo -n ' hmm=('  "${f[@]}" ; echo ')') ; 
+echo  "${var[@]}" > apipe
+
+   ##on a second terminal or computor  etc  because currently the named pipe needs to be called from a differnt location 
+ ##  its mainly like that as an example to myself. 
+ 
+ hmm=() ; x=$(cat apipe)  ; eval "${x[@]}" ;
+for i in "${hmm[@]}" ; do eval "$i" ; done |
+ ffmpeg -framerate 1 -f image2pipe -i - -c:v libx264 -r 30 -pix_fmt yuv420p wowhowneet.mp4 
+   
+   #too do seperate things into functions; change the arrays from having sillynames ; general cleanup. 
+   ##comment it out

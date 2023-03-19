@@ -1,0 +1,6 @@
+--------------
+## This sends each item of an array over a seperate namedpipe created on the fly and then removes the namedpipes afterwards. 
+##usefull for when the array indexes are are commandstrings to be evalld and subsequently combined into a single command. 
+list=( "1" "2" "3" "4" ) ;
+pipeselector () { pipe=$( seq 1 4 | shuf ) ; pipe=$( echo 'pipe'$pipe | tr " " "$pipe" ) ;  if [[ -p $pipe ]] ; then pipeselector ; else mkfifo $pipe ; pipelist+=($( echo $pipe )) ; fi ;  } ;
+for i in "${list[@]}"  ; do pipeselector  ; done ; for i in "${!list[@]}"  ; do   echo "${list["$i"]}" > "${pipelist["$i"]}"  ; done | cat  "${pipelist[@]}" ; rm "${pipelist[@]}"
